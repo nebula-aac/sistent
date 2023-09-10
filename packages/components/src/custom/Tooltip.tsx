@@ -8,13 +8,9 @@ type TooltipProps = {
   children: ReactElement<any, any>;
 } & Omit<MuiTooltipProps, 'title' | 'children' | 'onClick'>;
 
-export const MesheryTooltip: FC<TooltipProps> = ({
-  title,
-  onClick,
-  placement,
-  children,
-  ...props
-}) => {
+export const MesheryTooltip: FC<TooltipProps> = (
+  { title, onClick, placement, children, ...props }
+) => {
   return (
     <Tooltip title={title} placement={placement} onClick={onClick} arrow {...props}>
       {children}

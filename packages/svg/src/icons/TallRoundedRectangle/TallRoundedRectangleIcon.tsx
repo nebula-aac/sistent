@@ -2,12 +2,9 @@ import { FC } from 'react';
 import { DEFAULT_FILL, DEFAULT_HEIGHT, DEFAULT_WIDTH } from '../../constants/constants';
 import { IconProps } from '../types';
 
-export const TallRoundedRectangleIcon: FC<IconProps> = ({
-  width = DEFAULT_WIDTH,
-  height = DEFAULT_HEIGHT,
-  fill = DEFAULT_FILL,
-  ...props
-}) => {
+export const TallRoundedRectangleIcon: FC<IconProps> = (
+  { width = DEFAULT_WIDTH, height = DEFAULT_HEIGHT, fill = DEFAULT_FILL, ...props }
+) => {
   return (
     <svg
       width={width}

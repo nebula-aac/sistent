@@ -8,14 +8,16 @@ import {
 } from '../../constants/constants';
 import { IconProps } from '../types';
 
-export const OutlinedCircleIcon: FC<IconProps> = ({
-  width = DEFAULT_WIDTH,
-  height = DEFAULT_HEIGHT,
-  fill = DEFAULT_FILL_NONE,
-  stroke = DEFAULT_STROKE,
-  strokeWidth = DEFAULT_STROKE_WIDTH,
-  ...props
-}) => {
+export const OutlinedCircleIcon: FC<IconProps> = (
+  {
+    width = DEFAULT_WIDTH,
+    height = DEFAULT_HEIGHT,
+    fill = DEFAULT_FILL_NONE,
+    stroke = DEFAULT_STROKE,
+    strokeWidth = DEFAULT_STROKE_WIDTH,
+    ...props
+  }
+) => {
   return (
     <svg
       width={width}

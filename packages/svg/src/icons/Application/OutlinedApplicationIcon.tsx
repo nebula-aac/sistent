@@ -7,13 +7,15 @@ import {
 } from '../../constants/constants';
 import { IconProps } from '../types';
 
-export const OutlinedApplicationIcon: FC<IconProps> = ({
-  width = DEFAULT_WIDTH,
-  height = DEFAULT_HEIGHT,
-  fill = DEFAULT_FILL_NONE,
-  stroke = DEFAULT_STROKE,
-  ...props
-}) => {
+export const OutlinedApplicationIcon: FC<IconProps> = (
+  {
+    width = DEFAULT_WIDTH,
+    height = DEFAULT_HEIGHT,
+    fill = DEFAULT_FILL_NONE,
+    stroke = DEFAULT_STROKE,
+    ...props
+  }
+) => {
   return (
     <svg
       width={width}

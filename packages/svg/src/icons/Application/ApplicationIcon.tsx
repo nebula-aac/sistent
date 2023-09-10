@@ -2,11 +2,9 @@ import { FC } from 'react';
 import { DEFAULT_HEIGHT, DEFAULT_WIDTH } from '../../constants/constants';
 import { IconProps } from '../types';
 
-const ApplicationIcon: FC<IconProps> = ({
-  width = DEFAULT_WIDTH,
-  height = DEFAULT_HEIGHT,
-  ...props
-}) => {
+const ApplicationIcon: FC<IconProps> = (
+  { width = DEFAULT_WIDTH, height = DEFAULT_HEIGHT, ...props }
+) => {
   return (
     <svg
       width={width}

@@ -6,12 +6,9 @@ type KeppelTallRoundedRectangleIconProps = {
   primaryFill: string;
 } & IconProps;
 
-export const KeppelTallRoundedRectangleIcon: FC<KeppelTallRoundedRectangleIconProps> = ({
-  width = DEFAULT_WIDTH,
-  height = DEFAULT_HEIGHT,
-  primaryFill = KEPPEL_GREEN_FILL,
-  ...props
-}) => {
+export const KeppelTallRoundedRectangleIcon: FC<KeppelTallRoundedRectangleIconProps> = (
+  { width = DEFAULT_WIDTH, height = DEFAULT_HEIGHT, primaryFill = KEPPEL_GREEN_FILL, ...props }
+) => {
   return (
     <svg
       width={width}

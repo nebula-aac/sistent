@@ -12,13 +12,15 @@ type KeppelApplicationIconProps = {
   secondaryFill: string;
 } & IconProps;
 
-export const KeppelApplicationIcon: FC<KeppelApplicationIconProps> = ({
-  width = DEFAULT_WIDTH,
-  height = DEFAULT_HEIGHT,
-  primaryFill = KEPPEL_GREEN_FILL,
-  secondaryFill = CARIBBEAN_GREEN_FILL,
-  ...props
-}) => {
+export const KeppelApplicationIcon: FC<KeppelApplicationIconProps> = (
+  {
+    width = DEFAULT_WIDTH,
+    height = DEFAULT_HEIGHT,
+    primaryFill = KEPPEL_GREEN_FILL,
+    secondaryFill = CARIBBEAN_GREEN_FILL,
+    ...props
+  }
+) => {
   return (
     <svg
       width={width}
