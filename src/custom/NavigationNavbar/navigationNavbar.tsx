@@ -9,7 +9,14 @@ import { IconWrapper, MenuItemList, MenuItemSubList, MenuListStyle, SubIconWrapp
 
 export type NavigationItem = {
   id: string;
-  title: string;
+  /**
+   * Label rendered into `ListItemText`'s `primary` slot.
+   *
+   * Accepts any `React.ReactNode`, not just a string, so composed labels -
+   * a label plus a trailing external-link glyph, a `<Chip>` badge, a count -
+   * type-check as well as they already render.
+   */
+  title: React.ReactNode;
   icon?: React.ReactNode;
   /**
    * Legacy boolean permission flag.
