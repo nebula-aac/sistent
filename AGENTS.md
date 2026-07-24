@@ -37,7 +37,7 @@ Two complementary guards, and you need both:
 scans `src/` for every load-time form (`import from`, `export ... from`, bare `import`, `require`)
 of an enforced optional peer, and fails `jest` if one appears. `await import()` is deliberately not
 matched - deferring resolution is the fix, not the defect. That file is also the source of truth for
-*which* optional peers are enforced: `react` / `react-dom` are marked optional in `package.json` but
+_which_ optional peers are enforced: `react` / `react-dom` are marked optional in `package.json` but
 exempted there on the record, because every component imports React at module scope and always will.
 
 **2. Built artifact, by hand.** The CI guard reads source, so it cannot speak for what the bundler
@@ -79,10 +79,27 @@ of examples there, e.g. `FeedbackButton`, `NavigationItem`). Verify by building 
 
 ## Repo state that looks broken but is pre-existing
 
-`prettier --check` fails on ~82 files and `tsc --noEmit` reports errors across `src/` (including
-missing `@types/jest` wiring for `src/__testing__`). Neither is a CI gate - CI runs
+`prettier --check` fails on dozens of files and `tsc --noEmit` reports errors across `src/`
+(including missing `@types/jest` wiring for `src/__testing__`). Neither is a CI gate - CI runs
 `.github/workflows/node-checks.yml` (lint + build) and `jest`. Do not assume you caused these;
 do not mass-reformat to "fix" them.
+
+A type contract can still be gated, just not by a type-only assertion file: jest transforms with
+`@swc/jest`, which strips types without checking them, so such a file passes no matter what it
+asserts. Shell out to `tsc` over a scoped fixture, assert the fixture is in the compiled program
+(`--listFiles`) before trusting an empty diagnostic list, then filter the diagnostics to that
+fixture - [`src/__testing__/navigationItemTitleTypes.test.ts`](src/__testing__/navigationItemTitleTypes.test.ts)
+is the worked pattern, including the checks that keep the filter from turning the guard vacuous.
+
+## Every commit needs a sign-off matching its own author
+
+DCO is a blocking required check with nothing enforcing it locally, and the trailer must match that
+commit's own author identity. The rule, the enforcement, and the repair recipe live in
+[`CONTRIBUTING.md`](CONTRIBUTING.md#commit-signing) - read it before rewriting history.
+
+The agent-specific trap: the usual offender is a follow-up commit (review fix, doc update, rebase
+fixup), not the first one. Sign every commit you add, including the ones an automated pass makes
+for you.
 
 ## Maintaining this file
 
