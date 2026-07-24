@@ -93,18 +93,13 @@ is the worked pattern, including the checks that keep the filter from turning th
 
 ## Every commit needs a sign-off matching its own author
 
-DCO is a blocking required check, enforced by the [probot/dco](https://github.com/probot/dco) GitHub
-App - there is no workflow file for it under `.github/`, so it is invisible from the tree until a PR
-fails. Policy is in [`CONTRIBUTING.md`](CONTRIBUTING.md#commit-signing); the sharp edges are:
+DCO is a blocking required check with nothing enforcing it locally, and the trailer must match that
+commit's own author identity. The rule, the enforcement, and the repair recipe live in
+[`CONTRIBUTING.md`](CONTRIBUTING.md#commit-signing) - read it before rewriting history.
 
-- The trailer must match that commit's **author** identity, so `git commit -s` under a
-  `user.email` that differs from the author still fails. `.husky/commit-msg` is deliberately empty
-  (commit `612608be`) - nothing catches this locally.
-- The usual offender is a follow-up commit (review fix, doc update, rebase fixup), not the first one.
-  Sign every commit you add, including the ones an automated pass makes for you.
-- To repair, rebase only your own commits: `git rebase --signoff <last-correctly-signed-sha>`, then
-  force-push. Rebasing the whole branch grafts your sign-off onto a co-author's commit as a second
-  trailer.
+The agent-specific trap: the usual offender is a follow-up commit (review fix, doc update, rebase
+fixup), not the first one. Sign every commit you add, including the ones an automated pass makes
+for you.
 
 ## Maintaining this file
 
