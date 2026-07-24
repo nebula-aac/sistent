@@ -41,7 +41,21 @@ const FILE_SCOPED_DIAGNOSTIC = /^(.+?)\(\d+,\d+\): error TS\d+/;
 // neither fires unless the compiler had the fixture in its program.
 const CONFIG_SCOPED_DIAGNOSTIC = /^error TS\d+/;
 
-type Diagnostics = { fixture: string[]; config: string[] };
+// Absence of diagnostics only means "nothing was wrong with what tsc compiled" -
+// it says nothing about *what* tsc compiled. A project whose `include` resolves
+// to some other existing file emits no diagnostic at all, so both lists above
+// come back empty and the guard passes without ever having looked at the
+// fixture. `--listFiles` closes that by making the program's contents an
+// assertable fact instead of an assumption.
+const asPosix = (value: string): string => value.replace(/\\/g, '/');
+
+type Diagnostics = { fixture: string[]; config: string[]; compiledFixture: boolean };
+
+// Below the 180s `beforeAll` budget. `spawnSync` blocks the jest worker outright,
+// and jest's own timeout cannot preempt a synchronous child, so a wedged tsc
+// would otherwise hold the worker until the whole run is killed. Node's timeout
+// signals the child, which surfaces as the `status === null` throw below.
+const TSC_TIMEOUT_MS = 150_000;
 
 const typeCheckFixture = (): Diagnostics => {
   // Spawned through `process.execPath` rather than `npx`: no shell, no PATH
@@ -49,14 +63,15 @@ const typeCheckFixture = (): Diagnostics => {
   // would otherwise be caught and laundered into the diagnostic output.
   const tsc = spawnSync(
     process.execPath,
-    [require.resolve('typescript/bin/tsc'), '-p', PROJECT, '--pretty', 'false'],
+    [require.resolve('typescript/bin/tsc'), '-p', PROJECT, '--pretty', 'false', '--listFiles'],
     {
       cwd: repoRoot,
       encoding: 'utf8',
-      // tsc reports on every file in the program, and the fixture's transitive
-      // dependencies are a large share of `src/`. The 1 MB default would kill
-      // the child mid-stream and truncate stdout - and the fixture is a root
-      // file, so its diagnostics are emitted last and lost first.
+      timeout: TSC_TIMEOUT_MS,
+      // tsc reports on every file in the program, and `--listFiles` prints each
+      // one, so this runs to several MB. The 1 MB default would kill the child
+      // mid-stream and truncate stdout - and the fixture is a root file, so its
+      // diagnostics are emitted last and lost first.
       maxBuffer: 32 * 1024 * 1024
     }
   );
@@ -74,12 +89,16 @@ const typeCheckFixture = (): Diagnostics => {
 
   const belongsToFixture = (line: string): boolean => {
     const file = FILE_SCOPED_DIAGNOSTIC.exec(line)?.[1];
-    return file !== undefined && file.replace(/\\/g, '/').endsWith(FIXTURE);
+    return file !== undefined && asPosix(file).endsWith(FIXTURE);
   };
 
   return {
     fixture: lines.filter(belongsToFixture),
-    config: lines.filter((line) => CONFIG_SCOPED_DIAGNOSTIC.test(line))
+    config: lines.filter((line) => CONFIG_SCOPED_DIAGNOSTIC.test(line)),
+    // `--listFiles` prints one absolute path per program file, diagnostics aside.
+    compiledFixture: lines.some(
+      (line) => !FILE_SCOPED_DIAGNOSTIC.test(line) && asPosix(line).endsWith(FIXTURE)
+    )
   };
 };
 
@@ -90,7 +109,13 @@ describe('NavigationItem title type contract', () => {
     diagnostics = typeCheckFixture();
   }, 180_000);
 
-  it('compiles the fixture at all', () => {
+  // Ordered deliberately: the two assertions below are only meaningful once the
+  // fixture is known to have been compiled, so prove that first.
+  it('compiles the fixture', () => {
+    expect(diagnostics.compiledFixture).toBe(true);
+  });
+
+  it('reports no config-level failure that would skip the fixture', () => {
     expect(diagnostics.config).toEqual([]);
   });
 
