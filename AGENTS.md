@@ -79,15 +79,16 @@ of examples there, e.g. `FeedbackButton`, `NavigationItem`). Verify by building 
 
 ## Repo state that looks broken but is pre-existing
 
-`prettier --check` fails on ~82 files and `tsc --noEmit` reports errors across `src/` (including
-missing `@types/jest` wiring for `src/__testing__`). Neither is a CI gate - CI runs
+`prettier --check` fails on dozens of files and `tsc --noEmit` reports errors across `src/`
+(including missing `@types/jest` wiring for `src/__testing__`). Neither is a CI gate - CI runs
 `.github/workflows/node-checks.yml` (lint + build) and `jest`. Do not assume you caused these;
 do not mass-reformat to "fix" them.
 
 A type contract can still be gated, just not by a type-only assertion file: jest transforms with
 `@swc/jest`, which strips types without checking them, so such a file passes no matter what it
-asserts. Shell out to `tsc` over a scoped fixture and filter the diagnostics to that fixture -
-[`src/__testing__/navigationItemTitleTypes.test.ts`](src/__testing__/navigationItemTitleTypes.test.ts)
+asserts. Shell out to `tsc` over a scoped fixture, assert the fixture is in the compiled program
+(`--listFiles`) before trusting an empty diagnostic list, then filter the diagnostics to that
+fixture - [`src/__testing__/navigationItemTitleTypes.test.ts`](src/__testing__/navigationItemTitleTypes.test.ts)
 is the worked pattern, including the checks that keep the filter from turning the guard vacuous.
 
 ## Every commit needs a sign-off matching its own author
